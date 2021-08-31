@@ -1,0 +1,14 @@
+[
+  {
+    "ssn":"444-44-4444",
+    "name":"Иван",
+    "age":"35",
+    "email":"ivan@mail.com"
+  },
+  {
+    "ssn":"555-55-5555",
+    "name":"Петр",
+    "age":"32",
+    "email":"petr@mail.com"
+  }
+]

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Типы хранилищ в браузере - IndexDB API </title>
+
+
+    <script type = "text/javascript">
+
+        if (window.indexedDB) {
+
+            const customerData = [{ card: "444-44-4444", name: "Иван", age: 35, email: "ivan@mail.com" },
+                { card: "555-55-5555", name: "Петр", age: 32, email: "petr@mail.com" }];
+            const dbName = "testDB";
+            var db;
+            var request = indexedDB.open(dbName, 2);
+
+            request.onerror = function(event) {
+                console.log('Ошибка', request.error);
+            };
+
+            request.onsuccess = function(event) {
+                db = request.result;
+                console.log('Запрос успешный', db);
+            };
+
+            request.onupgradeneeded = function(event) {
+                var _db = event.target.result;
+
+                // autoIncrement: true
+                var objectStore = _db.createObjectStore("users", { keyPath: "card" });
+                objectStore.createIndex("name", "name", { unique: false });
+                objectStore.createIndex("email", "email", { unique: true });
+
+                customerData.forEach(function(user) {
+                    objectStore.add(user);
+                });
+
+            };
+
+            function add() {
+
+                var transaction = db.transaction(["users"], "readwrite");
+
+                transaction.oncomplete = function(event) {
+                    console.log('Транзакция завершена');
+                };
+
+                transaction.onerror = function(event) {
+                    console.log('Ошибка', transaction.error);
+                };
+
+                const userDataNew = [{ card: "777-77-7777", name: "Алекс", age: 32, email: "alex@mail.com" }];
+
+                var objectStore = transaction.objectStore("users");
+                userDataNew.forEach(function(user) {
+                    var request = objectStore.add(user);
+                    request.onsuccess = function(event) {
+                        console.log('Данные добавлены', event.target.result);
+                    };
+                });
+            }
+
+
+            function deleteData()
+            {
+                var request = db.transaction(["users"], "readwrite")
+                    .objectStore("users")
+                    .delete("777-77-7777");
+                request.onsuccess = function(event) {
+                    console.log('Запись удалена');
+                };
+            }
+
+            function read()
+            {
+                var transaction = db.transaction(["users"]);
+                var objectStore = transaction.objectStore("users");
+                var request = objectStore.get("444-44-4444");
+                request.onerror = function(event) {
+                    console.log('Ошибка', request.error);
+                };
+                request.onsuccess = function(event) {
+                    console.log('Имя пользователя 444-44-4444:', request.result.name);
+                };
+            }
+
+
+            function readAll()
+            {
+
+                var objectStore = db.transaction("users").objectStore("users");
+
+                console.log(db.transaction("users"));
+                console.log(objectStore);
+                document.getElementById("data").innerHTML="";
+
+                objectStore.openCursor().onsuccess = function(event) {
+                    var cursor = event.target.result;
+
+                    if (cursor) {
+                        document.getElementById("data").innerHTML+="CARD: " + cursor.key + " Name: " + cursor.value.name +" Age: " + cursor.value.age+"<br />";
+                        cursor.continue();
+                    }
+                    else {
+                        console.log('Записей больше нет');
+                    }
+                };
+            }
+
+            function update()
+            {
+
+                var objectStore = db.transaction(["users"], "readwrite").objectStore("users");
+                var request = objectStore.get("444-44-4444");
+                request.onerror = function(event) {
+                    console.log('Ошибка', request.error);
+                };
+                request.onsuccess = function(event) {
+                    var data = event.target.result;
+
+                    data.age = 42;
+
+                    var requestUpdate = objectStore.put(data);
+                    requestUpdate.onerror = function(event) {
+                        console.log(requestUpdate.error);
+                    };
+                    requestUpdate.onsuccess = function(event) {
+                        console.log('Данные обновлены');
+                    };
+                };
+            }
+
+
+        } else {
+            console.log("IndexDB не поддерживается..");
+        }
+
+    </script>
+
+
+</head>
+<body>
+Типы хранилищ в браузере - IndexDB API	<br/>
+
+<p id="data"></p>
+<button onclick = "add()">Добавить данные</button>
+<button onclick = "read()">Прочитать данные</button>
+<button onclick = "readAll()">Прочитать все данные</button>
+<button onclick = "update()">Обновить данные</button>
+<button onclick = "deleteData()">Удалить данные</button>
+
+</body>
+</html>

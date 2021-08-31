@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Типы хранилищ в браузере - Cookies </title>
+
+    <script type = "text/javascript">
+
+        function displayAllCookies()
+        {
+            var allcookies = document.cookie;
+            document.getElementById("data").innerHTML="Все куки: " + allcookies;
+        }
+
+    </script>
+</head>
+<body>
+Типы хранилищ в браузере - Cookies <br/>
+
+<p id="data"></p>
+<button onclick = "displayAllCookies()">Показать все куки</button>
+</body>
+</html>

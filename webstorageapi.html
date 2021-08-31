@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Типы хранилищ в браузере - Web Storage API </title>
+
+    <script type = "text/javascript">
+
+        if (typeof(Storage) !== "undefined") {
+
+            function addToStorage()
+            {
+                localStorage.setItem("testlocal", "тестовые локальные данные");
+                //localStorage.testlocal= "тестовые локальные данные";
+
+                sessionStorage.setItem("testsession", "тестовые сессионные данные");
+                //sessionStorage.testsession=  "тестовые сессионные данные";
+
+                var testObject = { 'one': 1, 'two': 2, 'three': 3 };
+                localStorage.setItem('testObject', JSON.stringify(testObject));
+            }
+
+            function removeFromStorage()
+            {
+                localStorage.removeItem("testlocal");
+                //localStorage.clear();
+                sessionStorage.removeItem("testsession");
+                //sessionStorage.clear();
+            }
+
+            function readDataFromStrage()
+            {
+
+                document.getElementById("data").innerHTML= "Local Storage: "+localStorage.getItem("testlocal")+"<br />";
+                document.getElementById("data").innerHTML+="Session Storage: "+sessionStorage.getItem("testsession")+"<br />";
+                var retrievedObject = localStorage.getItem('testObject');
+                document.getElementById("data").innerHTML+="JSON-данные: "+JSON.stringify(retrievedObject);
+            }
+
+
+        } else {
+            console.log("Web Storage не поддерживается..");
+        }
+    </script>
+</head>
+<body>
+Типы хранилищ в браузере - Web Storage API	<br/>
+
+<p id="data"></p>
+<button onclick = "addToStorage()">Добавить данные</button>
+<button onclick = "readDataFromStrage()">Считать данные</button>
+<button onclick = "removeFromStorage()">Удалить данные</button>
+</body>
+</html>
